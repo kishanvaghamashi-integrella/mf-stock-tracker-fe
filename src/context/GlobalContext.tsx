@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
 interface GlobalState {
-  user: any | null;
+  user: unknown | null;
 }
 
 interface GlobalContextProps {
