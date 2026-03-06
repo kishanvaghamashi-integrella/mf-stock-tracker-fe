@@ -1,7 +1,8 @@
 export interface User {
-  id: number;
-  name: string;
-  email: string;
+  id?: number | string;
+  name?: string;
+  email?: string;
+  token?: string;
 }
 
 export interface LoginRequest {
@@ -12,7 +13,7 @@ export interface LoginRequest {
 export interface RegisterRequest {
   name?: string;
   email?: string;
-  password_hash?: string;
+  password?: string;
 }
 
 export interface LoginResponse {

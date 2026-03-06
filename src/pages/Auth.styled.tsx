@@ -59,6 +59,33 @@ export const AuthInput = styled.input`
   }
 `;
 
+export const PasswordInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    padding-right: 2.5rem; /* Space for the icon */
+  }
+`;
+
+export const PasswordToggleButton = styled.button`
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b; /* Tailwind slate-500 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  &:hover {
+    color: #334155; /* Tailwind slate-700 */
+  }
+`;
+
 export const AuthButton = styled.button`
   width: 100%;
   background-color: #2563eb; /* Tailwind blue-600 */

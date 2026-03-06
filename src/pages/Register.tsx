@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import {
   AuthContainer,
   AuthCard,
@@ -9,6 +10,8 @@ import {
   AuthLabel,
   AuthInput,
   AuthButton,
+  PasswordInputWrapper,
+  PasswordToggleButton,
 } from "./Auth.styled";
 import { api } from "../utils/api";
 import type { RegisterRequest, RegisterResponse } from "../types";
@@ -19,8 +22,10 @@ const Register = () => {
   const [formData, setFormData] = useState<RegisterRequest>({
     name: "",
     email: "",
-    password_hash: "",
+    password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,12 +33,15 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await api.post<RegisterResponse>("/users/", formData);
       showToast.success("Account created successfully! Please log in.");
       navigate("/login");
     } catch (err: any) {
       showToast.error(err.message || "Failed to register");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,15 +74,26 @@ const Register = () => {
           </AuthFormGroup>
           <AuthFormGroup>
             <AuthLabel>Password</AuthLabel>
-            <AuthInput
-              type="password"
-              name="password_hash"
-              required
-              placeholder="••••••••"
-              onChange={handleChange}
-            />
+            <PasswordInputWrapper>
+              <AuthInput
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                placeholder="••••••••"
+                onChange={handleChange}
+              />
+              <PasswordToggleButton
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </PasswordToggleButton>
+            </PasswordInputWrapper>
           </AuthFormGroup>
-          <AuthButton type="submit">Sign Up</AuthButton>
+          <AuthButton type="submit" disabled={isLoading}>
+            {isLoading ? "Signing Up..." : "Sign Up"}
+          </AuthButton>
         </form>
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
