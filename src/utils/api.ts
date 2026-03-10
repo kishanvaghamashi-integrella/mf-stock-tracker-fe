@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.API_BASE_URL || "http://localhost:8080/api";
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 const UNPROTECTED_ROUTES = ["/users/login", "/users/"];
 
@@ -17,7 +18,10 @@ const getHeaders = (endpoint: string) => {
   return headers;
 };
 
-const handleResponse = async <T>(response: Response, endpoint: string): Promise<T> => {
+const handleResponse = async <T>(
+  response: Response,
+  endpoint: string,
+): Promise<T> => {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
@@ -25,6 +29,7 @@ const handleResponse = async <T>(response: Response, endpoint: string): Promise<
     if (response.status === 401 && !UNPROTECTED_ROUTES.includes(endpoint)) {
       localStorage.removeItem("token");
       window.location.href = "/login";
+      throw new Error("Unauthorized");
     }
 
     let errorMessage = "An error occurred";
@@ -33,10 +38,7 @@ const handleResponse = async <T>(response: Response, endpoint: string): Promise<
         errorMessage = data.error;
       } else if (data.error.errors && Array.isArray(data.error.errors)) {
         errorMessage = data.error.errors
-          .map(
-            (err: any) =>
-              `${err.field} - ${err.message}` || JSON.stringify(err),
-          )
+          .map((err: any) => `${err.field} - ${err.message}`)
           .join(" | ");
       } else {
         try {

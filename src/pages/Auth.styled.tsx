@@ -5,30 +5,34 @@ export const AuthContainer = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f1f5f9; /* Tailwind slate-100 */
+  background-color: var(--bg-page);
+  transition: background-color 0.2s ease;
 `;
 
 export const AuthCard = styled.div`
-  background: white;
+  background: var(--bg-surface);
   border-radius: 1rem;
-  box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-default);
   padding: 2.5rem;
   width: 100%;
   max-width: 28rem;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 `;
 
 export const AuthTitle = styled.h2`
   font-size: 1.875rem;
   font-weight: 700;
-  color: #0f172a; /* Tailwind slate-900 */
+  color: var(--text-default);
   margin-bottom: 0.5rem;
   text-align: center;
 `;
 
 export const AuthSubtitle = styled.p`
-  color: #64748b; /* Tailwind slate-500 */
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 2rem;
 `;
@@ -41,21 +45,30 @@ export const AuthLabel = styled.label`
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #334155; /* Tailwind slate-700 */
+  color: var(--text-subtle);
   margin-bottom: 0.25rem;
 `;
 
 export const AuthInput = styled.input`
   width: 100%;
+  box-sizing: border-box;
   padding: 0.5rem 1rem;
-  border: 1px solid #cbd5e1; /* Tailwind slate-300 */
+  border: 1px solid var(--border-default);
   border-radius: 0.5rem;
   outline: none;
+  background: var(--bg-subtle);
+  color: var(--text-default);
   transition: all 0.2s;
 
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
   &:focus {
-    border-color: #3b82f6; /* Tailwind blue-500 */
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--accent-primary) 20%, transparent);
+    background: var(--bg-surface);
   }
 `;
 
@@ -65,7 +78,7 @@ export const PasswordInputWrapper = styled.div`
   align-items: center;
 
   input {
-    padding-right: 2.5rem; /* Space for the icon */
+    padding-right: 2.5rem;
   }
 `;
 
@@ -75,21 +88,21 @@ export const PasswordToggleButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: #64748b; /* Tailwind slate-500 */
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
 
   &:hover {
-    color: #334155; /* Tailwind slate-700 */
+    color: var(--text-subtle);
   }
 `;
 
 export const AuthButton = styled.button`
   width: 100%;
-  background-color: #2563eb; /* Tailwind blue-600 */
-  color: white;
+  background-color: var(--accent-primary);
+  color: var(--accent-text);
   font-weight: 600;
   padding: 0.625rem 0;
   border-radius: 0.5rem;
@@ -98,11 +111,11 @@ export const AuthButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #1d4ed8; /* Tailwind blue-700 */
+    background-color: var(--accent-hover);
   }
 
   &:disabled {
-    background-color: #93c5fd;
+    background-color: var(--accent-disabled);
     cursor: not-allowed;
   }
 `;

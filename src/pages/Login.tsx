@@ -91,9 +91,16 @@ const Login = () => {
             {isLoading ? "Signing In..." : "Sign In"}
           </AuthButton>
         </form>
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p
+          className="mt-6 text-center text-sm"
+          style={{ color: "var(--text-muted)" }}
+        >
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link
+            to="/register"
+            style={{ color: "var(--accent-primary)" }}
+            className="hover:underline"
+          >
             Sign up
           </Link>
         </p>

@@ -6,6 +6,18 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>finance tracker</title>
+  <!-- Anti-FOUC: apply dark class before first paint -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      if (
+        stored === 'dark' ||
+        (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 </head>
 
 <body>

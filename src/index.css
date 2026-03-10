@@ -1,14 +1,92 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 dark: variants */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #3b82f6;
   --color-secondary: #0ea5e9;
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
+/* ─── Light theme (default) ─────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-page: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f5f9;
+
+  /* Text */
+  --text-default: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #334155;
+
+  /* Borders */
+  --border-default: #cbd5e1;
+  --border-strong: #94a3b8;
+
+  /* Accent (blue) */
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-disabled: #93c5fd;
+  --accent-text: #ffffff;
+
+  /* Chart */
+  --chart-stroke: #3b82f6;
+  --chart-grid: #e2e8f0;
+  --chart-tick: #64748b;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-text: #0f172a;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ─── Dark theme — warm charcoal ─────────────── */
+.dark {
+  /* Backgrounds: warm stone tones, not pure black */
+  --bg-page: #1c1917;
+  --bg-surface: #28251f;
+  --bg-subtle: #322f28;
+
+  /* Text: warm off-whites, not harsh pure white */
+  --text-default: #f0ece4;
+  --text-muted: #9c9589;
+  --text-subtle: #ccc6bb;
+
+  /* Borders */
+  --border-default: #3d3a34;
+  --border-strong: #57534e;
+
+  /* Accent: softer blue works better on warm dark backgrounds */
+  --accent-primary: #5b8cfa;
+  --accent-hover: #7aa3fb;
+  --accent-disabled: #2d3a5a;
+  --accent-text: #ffffff;
+
+  /* Chart */
+  --chart-stroke: #5b8cfa;
+  --chart-grid: #3d3a34;
+  --chart-tick: #9c9589;
+  --chart-tooltip-bg: #28251f;
+  --chart-tooltip-text: #f0ece4;
+
+  /* Shadows: deeper for dark surfaces */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--bg-page);
+  color: var(--text-default);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
