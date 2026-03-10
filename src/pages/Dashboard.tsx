@@ -1,4 +1,6 @@
 import { Title, DashboardPanel } from "./Dashboard.styled";
+import ThemeToggle from "../components/ThemeToggle";
+import { useTheme } from "../context/ThemeContext";
 import {
   LineChart,
   Line,
@@ -20,15 +22,35 @@ const data = [
 ];
 
 const Dashboard = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  const chartColors = {
+    stroke: isDark ? "#5b8cfa" : "#3b82f6",
+    grid: isDark ? "#3d3a34" : "#e2e8f0",
+    tick: isDark ? "#9c9589" : "#64748b",
+    tooltipBg: isDark ? "#28251f" : "#ffffff",
+    tooltipText: isDark ? "#f0ece4" : "#0f172a",
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">
-          Investment Portfolio
-        </h1>
-        <p className="text-slate-500 mt-2">
-          Welcome to your portfolio tracker.
-        </p>
+    <div
+      className="min-h-screen p-8"
+      style={{ backgroundColor: "var(--bg-page)" }}
+    >
+      <header className="mb-8 flex items-start justify-between">
+        <div>
+          <h1
+            className="text-3xl font-bold"
+            style={{ color: "var(--text-default)" }}
+          >
+            Investment Portfolio
+          </h1>
+          <p className="mt-2" style={{ color: "var(--text-muted)" }}>
+            Welcome to your portfolio tracker.
+          </p>
+        </div>
+        <ThemeToggle />
       </header>
 
       <DashboardPanel>
@@ -39,32 +61,36 @@ const Dashboard = () => {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#e2e8f0"
+                stroke={chartColors.grid}
               />
               <XAxis
                 dataKey="name"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#64748b" }}
+                tick={{ fill: chartColors.tick }}
                 dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#64748b" }}
+                tick={{ fill: chartColors.tick }}
                 dx={-10}
               />
               <Tooltip
                 contentStyle={{
                   borderRadius: "0.5rem",
-                  border: "none",
-                  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                  border: `1px solid ${isDark ? "#3d3a34" : "#e2e8f0"}`,
+                  boxShadow: isDark
+                    ? "0 10px 15px -3px rgb(0 0 0 / 0.4)"
+                    : "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                  backgroundColor: chartColors.tooltipBg,
+                  color: chartColors.tooltipText,
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#3b82f6"
+                stroke={chartColors.stroke}
                 strokeWidth={3}
                 dot={{ r: 4, strokeWidth: 2 }}
                 activeDot={{ r: 6, strokeWidth: 0 }}

@@ -1,16 +1,19 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
+import { BrowserRouter } from "react-router-dom";
 import { GlobalProvider } from "./context/GlobalContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import AppRoutes from "./routes/AppRoutes";
+import AppToaster from "./components/AppToaster";
 
 function App() {
   return (
-    <GlobalProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-        </Routes>
-      </BrowserRouter>
-    </GlobalProvider>
+    <ThemeProvider>
+      <GlobalProvider>
+        <BrowserRouter>
+          <AppToaster />
+          <AppRoutes />
+        </BrowserRouter>
+      </GlobalProvider>
+    </ThemeProvider>
   );
 }
 
