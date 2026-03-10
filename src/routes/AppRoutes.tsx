@@ -7,6 +7,7 @@ import AppLayout from "../components/AppLayout";
 import Dashboard from "../pages/Dashboard";
 import Portfolio from "../pages/Portfolio";
 import Transactions from "../pages/Transactions";
+import Assets from "../pages/Assets";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ProtectedRoute from "./ProtectedRoute";
@@ -63,6 +64,7 @@ function AppRoutes() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/transactions" element={<Transactions />} />
+          <Route path="/assets" element={<Assets />} />
         </Route>
       </Route>
     </Routes>

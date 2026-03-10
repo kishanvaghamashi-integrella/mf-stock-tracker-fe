@@ -23,6 +23,7 @@ import {
   LayoutDashboard,
   BriefcaseBusiness,
   ArrowLeftRight,
+  Landmark,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -37,6 +38,7 @@ import { showToast } from "../utils/toast";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
+  { label: "Assets", path: "/assets", icon: Landmark },
   { label: "Portfolio", path: "/portfolio", icon: BriefcaseBusiness },
   { label: "Transactions", path: "/transactions", icon: ArrowLeftRight },
 ];
