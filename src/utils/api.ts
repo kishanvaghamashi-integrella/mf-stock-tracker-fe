@@ -3,6 +3,11 @@ const BASE_URL =
 
 const UNPROTECTED_ROUTES = ["/users/login", "/users/"];
 
+interface ValidationError {
+  field: string;
+  message: string;
+}
+
 const getHeaders = (endpoint: string) => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -38,7 +43,7 @@ const handleResponse = async <T>(
         errorMessage = data.error;
       } else if (data.error.errors && Array.isArray(data.error.errors)) {
         errorMessage = data.error.errors
-          .map((err: any) => `${err.field} - ${err.message}`)
+          .map((err: ValidationError) => `${err.field} - ${err.message}`)
           .join(" | ");
       } else {
         try {
@@ -64,7 +69,7 @@ export const api = {
     return handleResponse<T>(response, endpoint);
   },
 
-  async post<T>(endpoint: string, body: any): Promise<T> {
+  async post<T>(endpoint: string, body: unknown): Promise<T> {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
       headers: getHeaders(endpoint),

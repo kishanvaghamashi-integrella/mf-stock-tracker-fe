@@ -44,8 +44,9 @@ const Login = () => {
       setState({ user: response.user });
       showToast.success(response.message || "Logged in successfully!");
       navigate("/"); // Redirect to dashboard
-    } catch (err: any) {
-      showToast.error(err.message || "Failed to login");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to login";
+      showToast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -59,8 +60,9 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
           <AuthFormGroup>
-            <AuthLabel>Email</AuthLabel>
+            <AuthLabel htmlFor="email">Email</AuthLabel>
             <AuthInput
+              id="email"
               type="email"
               name="email"
               required
@@ -69,9 +71,10 @@ const Login = () => {
             />
           </AuthFormGroup>
           <AuthFormGroup>
-            <AuthLabel>Password</AuthLabel>
+            <AuthLabel htmlFor="password">Password</AuthLabel>
             <PasswordInputWrapper>
               <AuthInput
+                id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 required

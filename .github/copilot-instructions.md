@@ -25,6 +25,7 @@
 - **Styled Components Separation:** Custom `styled-components` for any React component should NOT be defined within the main component file. For every component, create a separate `[ComponentName].styled.tsx` file (e.g., `Dashboard.styled.tsx`) alongside it and export them, keeping the main component file clean.
 - Tailwind CSS utility classes should be used for simple layout, positioning, and common styling. Use `styled-components` for specific component styling or complex custom logic.
 - **Notifications/Toasts:** For success, error, or loading notifications resulting from operations (like API calls), always use the reusable `showToast` utility from `src/utils/toast.ts` (which wraps `react-hot-toast`). Avoid manual inline error text states unless specifically required for field-level form validation.
+- **Responsive & Mobile-First:** Every page and component must be designed mobile-first. Start with the smallest viewport and scale up using Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`, `xl:`). No fixed pixel widths that would break on small screens. Use fluid widths (`w-full`, `max-w-*`), flexible grids (`grid`, `flex`, `flex-wrap`), and ensure touch targets are at least 44×44px.
 
 ## Dark Mode & Theming
 
@@ -39,26 +40,27 @@ The app supports light and dark modes. Dark mode uses warm charcoal tones (not h
 
 ### Color Palette
 
-| Token | Light | Dark |
-|---|---|---|
-| `--bg-page` | `#f8fafc` | `#1c1917` |
-| `--bg-surface` | `#ffffff` | `#28251f` |
-| `--bg-subtle` | `#f1f5f9` | `#322f28` |
-| `--text-default` | `#0f172a` | `#f0ece4` |
-| `--text-muted` | `#64748b` | `#9c9589` |
-| `--text-subtle` | `#334155` | `#ccc6bb` |
-| `--border-default` | `#cbd5e1` | `#3d3a34` |
-| `--border-strong` | `#94a3b8` | `#57534e` |
-| `--accent-primary` | `#2563eb` | `#5b8cfa` |
-| `--accent-hover` | `#1d4ed8` | `#7aa3fb` |
+| Token               | Light     | Dark      |
+| ------------------- | --------- | --------- |
+| `--bg-page`         | `#f8fafc` | `#1c1917` |
+| `--bg-surface`      | `#ffffff` | `#28251f` |
+| `--bg-subtle`       | `#f1f5f9` | `#322f28` |
+| `--text-default`    | `#0f172a` | `#f0ece4` |
+| `--text-muted`      | `#64748b` | `#9c9589` |
+| `--text-subtle`     | `#334155` | `#ccc6bb` |
+| `--border-default`  | `#cbd5e1` | `#3d3a34` |
+| `--border-strong`   | `#94a3b8` | `#57534e` |
+| `--accent-primary`  | `#2563eb` | `#5b8cfa` |
+| `--accent-hover`    | `#1d4ed8` | `#7aa3fb` |
 | `--accent-disabled` | `#93c5fd` | `#2d3a5a` |
-| `--chart-stroke` | `#3b82f6` | `#5b8cfa` |
-| `--chart-grid` | `#e2e8f0` | `#3d3a34` |
-| `--chart-tick` | `#64748b` | `#9c9589` |
+| `--chart-stroke`    | `#3b82f6` | `#5b8cfa` |
+| `--chart-grid`      | `#e2e8f0` | `#3d3a34` |
+| `--chart-tick`      | `#64748b` | `#9c9589` |
 
 ### Rules for Every New Component
 
 1. **Styled-components:** Always use `var(--token-name)` instead of hardcoded hex colors.
+
    ```tsx
    // ✅ correct
    const Card = styled.div`
@@ -67,10 +69,14 @@ The app supports light and dark modes. Dark mode uses warm charcoal tones (not h
      border: 1px solid var(--border-default);
    `;
    // ❌ wrong
-   const Card = styled.div`background: white; color: #0f172a;`;
+   const Card = styled.div`
+     background: white;
+     color: #0f172a;
+   `;
    ```
 
 2. **Tailwind classes:** For any color-carrying utility, add a `dark:` variant or switch to a CSS-variable-based inline style.
+
    ```tsx
    // ✅ correct — CSS variable approach
    <p style={{ color: "var(--text-muted)" }}>...</p>
@@ -80,6 +86,7 @@ The app supports light and dark modes. Dark mode uses warm charcoal tones (not h
    ```
 
 3. **Recharts:** Since recharts takes raw color strings, read the current theme via `useTheme()` and pass the appropriate palette value:
+
    ```tsx
    const { theme } = useTheme();
    const isDark = theme === "dark";
@@ -88,4 +95,3 @@ The app supports light and dark modes. Dark mode uses warm charcoal tones (not h
    ```
 
 4. **NEVER use `bg-slate-*`, `text-slate-*`, `bg-white`, etc.** without a corresponding dark mode override when those are the sole color source. Prefer CSS variables for anything theme-sensitive.
-

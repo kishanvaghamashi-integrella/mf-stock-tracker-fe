@@ -38,8 +38,9 @@ const Register = () => {
       await api.post<RegisterResponse>("/users/", formData);
       showToast.success("Account created successfully! Please log in.");
       navigate("/login");
-    } catch (err: any) {
-      showToast.error(err.message || "Failed to register");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to register";
+      showToast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -53,8 +54,9 @@ const Register = () => {
 
         <form onSubmit={handleSubmit}>
           <AuthFormGroup>
-            <AuthLabel>Full Name</AuthLabel>
+            <AuthLabel htmlFor="name">Full Name</AuthLabel>
             <AuthInput
+              id="name"
               type="text"
               name="name"
               required
@@ -63,8 +65,9 @@ const Register = () => {
             />
           </AuthFormGroup>
           <AuthFormGroup>
-            <AuthLabel>Email</AuthLabel>
+            <AuthLabel htmlFor="email">Email</AuthLabel>
             <AuthInput
+              id="email"
               type="email"
               name="email"
               required
@@ -73,9 +76,10 @@ const Register = () => {
             />
           </AuthFormGroup>
           <AuthFormGroup>
-            <AuthLabel>Password</AuthLabel>
+            <AuthLabel htmlFor="password">Password</AuthLabel>
             <PasswordInputWrapper>
               <AuthInput
+                id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 required

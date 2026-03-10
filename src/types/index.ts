@@ -1,19 +1,19 @@
 export interface User {
-  id?: number | string;
-  name?: string;
-  email?: string;
-  token?: string;
+  id: number | string;
+  name: string;
+  email: string;
+  token: string;
 }
 
 export interface LoginRequest {
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
 }
 
 export interface RegisterRequest {
-  name?: string;
-  email?: string;
-  password?: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 export interface LoginResponse {
