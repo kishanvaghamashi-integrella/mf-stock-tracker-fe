@@ -1,5 +1,4 @@
 import { Title, DashboardPanel } from "./Dashboard.styled";
-import ThemeToggle from "../components/ThemeToggle";
 import { useTheme } from "../context/ThemeContext";
 import {
   LineChart,
@@ -38,19 +37,16 @@ const Dashboard = () => {
       className="min-h-screen p-8"
       style={{ backgroundColor: "var(--bg-page)" }}
     >
-      <header className="mb-8 flex items-start justify-between">
-        <div>
-          <h1
-            className="text-3xl font-bold"
-            style={{ color: "var(--text-default)" }}
-          >
-            Investment Portfolio
-          </h1>
-          <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-            Welcome to your portfolio tracker.
-          </p>
-        </div>
-        <ThemeToggle />
+      <header className="mb-8">
+        <h1
+          className="text-3xl font-bold"
+          style={{ color: "var(--text-default)" }}
+        >
+          Investment Portfolio
+        </h1>
+        <p className="mt-2" style={{ color: "var(--text-muted)" }}>
+          Welcome to your portfolio tracker.
+        </p>
       </header>
 
       <DashboardPanel>
