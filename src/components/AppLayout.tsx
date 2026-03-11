@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutWrapper,
   Sidebar,
@@ -8,11 +8,14 @@ import {
   NavList,
   NavItem,
   NavLabel,
+  SidebarActionButton,
+  SidebarLogoutButton,
   SidebarBottom,
   MainContent,
   BottomBar,
   BottomBarItems,
   BottomNavItem,
+  BottomMoreButton,
   DrawerOverlay,
   DrawerPanel,
   DrawerClose,
@@ -45,7 +48,6 @@ const navItems = [
 
 const AppLayout = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { setState } = useGlobalContext();
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
@@ -82,10 +84,9 @@ const AppLayout = () => {
         <NavList>
           {navItems.map(({ label, path, icon: Icon }) => (
             <NavItem
-              key={path}
-              $active={location.pathname === path}
               $collapsed={collapsed}
-              onClick={() => navigate(path)}
+              key={path}
+              to={path}
               title={collapsed ? label : undefined}
             >
               <Icon size={20} />
@@ -95,8 +96,7 @@ const AppLayout = () => {
         </NavList>
 
         <SidebarBottom>
-          <NavItem
-            $active={false}
+          <SidebarActionButton
             $collapsed={collapsed}
             onClick={toggleTheme}
             title={
@@ -107,18 +107,16 @@ const AppLayout = () => {
             <NavLabel $collapsed={collapsed}>
               {isDark ? "Light Mode" : "Dark Mode"}
             </NavLabel>
-          </NavItem>
+          </SidebarActionButton>
 
-          <NavItem
-            $active={false}
+          <SidebarLogoutButton
             $collapsed={collapsed}
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}
-            style={{ color: "var(--color-danger)" }}
           >
             <LogOut size={20} />
             <NavLabel $collapsed={collapsed}>Logout</NavLabel>
-          </NavItem>
+          </SidebarLogoutButton>
         </SidebarBottom>
       </Sidebar>
 
@@ -131,20 +129,16 @@ const AppLayout = () => {
       <BottomBar>
         <BottomBarItems>
           {navItems.map(({ label, path, icon: Icon }) => (
-            <BottomNavItem
-              key={path}
-              $active={location.pathname === path}
-              onClick={() => navigate(path)}
-            >
+            <BottomNavItem key={path} to={path}>
               <Icon size={22} />
               {label}
             </BottomNavItem>
           ))}
 
-          <BottomNavItem $active={false} onClick={() => setDrawerOpen(true)}>
+          <BottomMoreButton onClick={() => setDrawerOpen(true)}>
             <Menu size={22} />
             More
-          </BottomNavItem>
+          </BottomMoreButton>
         </BottomBarItems>
       </BottomBar>
 

@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 export const LayoutWrapper = styled.div`
@@ -38,8 +39,8 @@ export const CollapseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 0.5rem;
   border: none;
   background: transparent;
@@ -65,7 +66,7 @@ export const NavList = styled.nav`
   overflow-y: auto;
 `;
 
-export const NavItem = styled.button<{ $active: boolean; $collapsed: boolean }>`
+export const NavItem = styled(NavLink)<{ $collapsed: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -77,17 +78,24 @@ export const NavItem = styled.button<{ $active: boolean; $collapsed: boolean }>`
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
-  background: ${({ $active }) =>
-    $active ? "var(--accent-primary)" : "transparent"};
-  color: ${({ $active }) =>
-    $active ? "var(--accent-text)" : "var(--text-default)"};
+  text-decoration: none;
+  color: var(--text-default);
+  background: transparent;
   transition:
     background 0.15s ease,
     color 0.15s ease;
 
-  &:hover {
-    background: ${({ $active }) =>
-      $active ? "var(--accent-hover)" : "var(--bg-subtle)"};
+  &[aria-current="page"] {
+    background: var(--accent-primary);
+    color: var(--accent-text);
+
+    &:hover {
+      background: var(--accent-hover);
+    }
+  }
+
+  &:not([aria-current="page"]):hover {
+    background: var(--bg-subtle);
   }
 
   svg {
@@ -101,6 +109,41 @@ export const NavLabel = styled.span<{ $collapsed: boolean }>`
   opacity: ${({ $collapsed }) => ($collapsed ? "0" : "1")};
   transition: opacity 0.15s ease;
   pointer-events: none;
+`;
+
+export const SidebarActionButton = styled.button<{ $collapsed: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  background: transparent;
+  color: var(--text-default);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: var(--bg-subtle);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+`;
+
+export const SidebarLogoutButton = styled(SidebarActionButton)`
+  color: var(--color-danger);
+
+  &:hover {
+    background: var(--color-danger-bg);
+  }
 `;
 
 export const SidebarBottom = styled.div`
@@ -148,7 +191,7 @@ export const BottomBarItems = styled.div`
   justify-content: space-around;
 `;
 
-export const BottomNavItem = styled.button<{ $active: boolean }>`
+export const BottomNavItem = styled(NavLink)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -159,11 +202,36 @@ export const BottomNavItem = styled.button<{ $active: boolean }>`
   min-width: 44px;
   border: none;
   background: transparent;
-  color: ${({ $active }) =>
-    $active ? "var(--accent-primary)" : "var(--text-muted)"};
+  color: var(--text-muted);
   cursor: pointer;
   transition: color 0.15s ease;
+  text-decoration: none;
+  font-size: 0.65rem;
+  font-weight: 500;
 
+  &[aria-current="page"] {
+    color: var(--accent-primary);
+  }
+
+  &:not([aria-current="page"]):hover {
+    color: var(--accent-primary);
+  }
+`;
+
+export const BottomMoreButton = styled.button`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  flex: 1;
+  height: 100%;
+  min-width: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
   font-size: 0.65rem;
   font-weight: 500;
 
@@ -212,8 +280,8 @@ export const DrawerClose = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 0.5rem;
   border: none;
   background: transparent;
