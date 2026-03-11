@@ -79,7 +79,8 @@ export const NavItem = styled.button<{ $active: boolean; $collapsed: boolean }>`
   overflow: hidden;
   background: ${({ $active }) =>
     $active ? "var(--accent-primary)" : "transparent"};
-  color: ${({ $active }) => ($active ? "#ffffff" : "var(--text-default)")};
+  color: ${({ $active }) =>
+    $active ? "var(--accent-text)" : "var(--text-default)"};
   transition:
     background 0.15s ease,
     color 0.15s ease;
@@ -180,7 +181,7 @@ export const DrawerOverlay = styled.div<{ $open: boolean }>`
     display: ${({ $open }) => ($open ? "block" : "none")};
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--overlay-scrim, rgba(0, 0, 0, 0.45));
     z-index: 200;
   }
 `;
@@ -248,10 +249,10 @@ export const DrawerItem = styled.button`
 `;
 
 export const DrawerLogoutItem = styled(DrawerItem)`
-  color: #ef4444;
+  color: var(--color-danger);
   margin-top: auto;
 
   &:hover {
-    background: rgba(239, 68, 68, 0.08);
+    background: var(--color-danger-bg);
   }
 `;

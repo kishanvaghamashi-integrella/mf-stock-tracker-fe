@@ -114,7 +114,7 @@ const AppLayout = () => {
             $collapsed={collapsed}
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}
-            style={{ color: "#ef4444" }}
+            style={{ color: "var(--color-danger)" }}
           >
             <LogOut size={20} />
             <NavLabel $collapsed={collapsed}>Logout</NavLabel>

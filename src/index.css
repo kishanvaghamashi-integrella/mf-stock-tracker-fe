@@ -31,6 +31,10 @@
   --accent-disabled: #93c5fd;
   --accent-text: #ffffff;
 
+  /* Danger */
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.08);
+
   /* Chart */
   --chart-stroke: #3b82f6;
   --chart-grid: #e2e8f0;
@@ -66,6 +70,10 @@
   --accent-hover: #7aa3fb;
   --accent-disabled: #2d3a5a;
   --accent-text: #ffffff;
+
+  /* Danger */
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(248, 113, 113, 0.1);
 
   /* Chart */
   --chart-stroke: #5b8cfa;
