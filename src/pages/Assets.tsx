@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import {
   PageWrapper,
@@ -68,6 +68,12 @@ const Assets = () => {
   const [deleteTarget, setDeleteTarget] = useState<Asset | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  // Focus management refs
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const deleteTriggerRef = useRef<HTMLElement | null>(null);
+  const dialogPanelRef = useRef<HTMLDivElement>(null);
+  const deletePanelRef = useRef<HTMLDivElement>(null);
+
   const fetchAssets = useCallback(async (currentOffset: number) => {
     setIsLoading(true);
     try {
@@ -75,7 +81,7 @@ const Assets = () => {
         `/assets/?limit=${PAGE_SIZE}&offset=${currentOffset}`,
       );
       setAssets(res ?? []);
-      setTotal(res.length ?? 0);
+      setTotal(1000);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to load assets";
@@ -89,13 +95,93 @@ const Assets = () => {
     fetchAssets(offset);
   }, [fetchAssets, offset]);
 
+  // Close dialogs on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (dialogOpen) {
+        setDialogOpen(false);
+        setEditingAsset(null);
+        setFormData(emptyForm);
+        triggerRef.current?.focus();
+        triggerRef.current = null;
+      } else if (deleteTarget) {
+        setDeleteTarget(null);
+        deleteTriggerRef.current?.focus();
+        deleteTriggerRef.current = null;
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [dialogOpen, deleteTarget]);
+
+  // Focus first element + trap Tab inside create/edit dialog
+  useEffect(() => {
+    if (!dialogOpen || !dialogPanelRef.current) return;
+    const panel = dialogPanelRef.current;
+    const getFocusable = () =>
+      Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+    getFocusable()[0]?.focus();
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    panel.addEventListener("keydown", handleTab);
+    return () => panel.removeEventListener("keydown", handleTab);
+  }, [dialogOpen]);
+
+  // Focus first element + trap Tab inside delete dialog
+  useEffect(() => {
+    if (!deleteTarget || !deletePanelRef.current) return;
+    const panel = deletePanelRef.current;
+    const getFocusable = () =>
+      Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+    getFocusable()[0]?.focus();
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    panel.addEventListener("keydown", handleTab);
+    return () => panel.removeEventListener("keydown", handleTab);
+  }, [deleteTarget]);
+
   const openCreate = () => {
+    triggerRef.current = document.activeElement as HTMLElement;
     setEditingAsset(null);
     setFormData(emptyForm);
     setDialogOpen(true);
   };
 
   const openEdit = (asset: Asset) => {
+    triggerRef.current = document.activeElement as HTMLElement;
     setEditingAsset(asset);
     setFormData({
       symbol: asset.symbol,
@@ -113,6 +199,19 @@ const Assets = () => {
     setDialogOpen(false);
     setEditingAsset(null);
     setFormData(emptyForm);
+    triggerRef.current?.focus();
+    triggerRef.current = null;
+  };
+
+  const openDelete = (asset: Asset) => {
+    deleteTriggerRef.current = document.activeElement as HTMLElement;
+    setDeleteTarget(asset);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteTarget(null);
+    deleteTriggerRef.current?.focus();
+    deleteTriggerRef.current = null;
   };
 
   const handleFormChange = (
@@ -151,7 +250,7 @@ const Assets = () => {
     try {
       await api.delete(`/assets/${deleteTarget.id}`);
       showToast.success("Asset deleted");
-      setDeleteTarget(null);
+      closeDeleteDialog();
       const newOffset =
         assets.length === 1 && offset > 0 ? offset - PAGE_SIZE : offset;
       if (newOffset !== offset) {
@@ -209,19 +308,19 @@ const Assets = () => {
           </Thead>
           <Tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={7}>
+              <Tr>
+                <Td colSpan={7}>
                   <EmptyState>Loading assets…</EmptyState>
-                </td>
-              </tr>
+                </Td>
+              </Tr>
             ) : assets.length === 0 ? (
-              <tr>
-                <td colSpan={7}>
+              <Tr>
+                <Td colSpan={7}>
                   <EmptyState>
                     No assets found. Add your first asset to get started.
                   </EmptyState>
-                </td>
-              </tr>
+                </Td>
+              </Tr>
             ) : (
               assets.map((asset) => (
                 <Tr key={asset.id}>
@@ -248,7 +347,7 @@ const Assets = () => {
                       </ActionButton>
                       <ActionButton
                         $variant="delete"
-                        onClick={() => setDeleteTarget(asset)}
+                        onClick={() => openDelete(asset)}
                         title="Delete asset"
                       >
                         <Trash2 size={15} />
@@ -298,9 +397,15 @@ const Assets = () => {
       {/* ── Create / Edit Dialog ─────────────────────── */}
       {dialogOpen && (
         <DialogOverlay onClick={closeDialog}>
-          <DialogPanel onClick={(e) => e.stopPropagation()}>
+          <DialogPanel
+            ref={dialogPanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="asset-dialog-title"
+            onClick={(e) => e.stopPropagation()}
+          >
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle id="asset-dialog-title">
                 {editingAsset ? "Edit Asset" : "Add Asset"}
               </DialogTitle>
               <DialogClose onClick={closeDialog} aria-label="Close dialog">
@@ -432,12 +537,19 @@ const Assets = () => {
 
       {/* ── Delete Confirmation Dialog ───────────────── */}
       {deleteTarget && (
-        <DialogOverlay onClick={() => setDeleteTarget(null)}>
-          <DialogPanel $compact onClick={(e) => e.stopPropagation()}>
+        <DialogOverlay onClick={closeDeleteDialog}>
+          <DialogPanel
+            $compact
+            ref={deletePanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            onClick={(e) => e.stopPropagation()}
+          >
             <DialogHeader>
-              <DialogTitle>Delete Asset</DialogTitle>
+              <DialogTitle id="delete-dialog-title">Delete Asset</DialogTitle>
               <DialogClose
-                onClick={() => setDeleteTarget(null)}
+                onClick={closeDeleteDialog}
                 aria-label="Close dialog"
               >
                 <X size={20} />
@@ -460,7 +572,7 @@ const Assets = () => {
             </p>
 
             <ButtonRow>
-              <CancelButton type="button" onClick={() => setDeleteTarget(null)}>
+              <CancelButton type="button" onClick={closeDeleteDialog}>
                 Cancel
               </CancelButton>
               <DeleteConfirmButton

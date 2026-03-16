@@ -148,8 +148,8 @@ export const ActionButton = styled.button<{ $variant: "edit" | "delete" }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: 0.375rem;
   cursor: pointer;
