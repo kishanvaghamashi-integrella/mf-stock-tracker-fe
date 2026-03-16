@@ -95,3 +95,16 @@ The app supports light and dark modes. Dark mode uses warm charcoal tones (not h
    ```
 
 4. **NEVER use `bg-slate-*`, `text-slate-*`, `bg-white`, etc.** without a corresponding dark mode override when those are the sole color source. Prefer CSS variables for anything theme-sensitive.
+
+## Data Pages (Assets, Portfolio, Transactions, etc.)
+
+Every page that lists data for a module must follow this pattern:
+
+- **Table view:** Display records in a `<table>` inside a `TableContainer` (rounded surface card with `overflow-x: auto` for mobile). Columns should be concise; use a badge/pill for enum fields like `instrument_type`.
+- **Pagination:** Use limit/offset-based pagination. Default page size is 20 (max 200). Show a "X–Y of Z" count on the left and Previous / Page N of M / Next controls on the right. Disable Previous on the first page and Next on the last.
+- **Add button:** A primary "Add [Entity]" button in the page header opens a dialog for creating a new record.
+- **Edit & Delete actions:** Each row has an edit icon (Pencil) and a delete icon (Trash2) in an Actions column. The edit icon re-opens the same create dialog pre-filled with the record's data. The delete icon opens a compact confirmation dialog before performing the DELETE request.
+- **Reuse dialog:** A single dialog component handles both create and update by checking whether `editingEntity` is null. Pass the entity data into the form on open, and reset to empty on close.
+- **Loading & empty states:** While fetching, show a centred "Loading…" message in the table body. When the list is empty, show a helpful empty-state message.
+- **All API calls** use `showToast` for success, error, and (where appropriate) loading feedback — never inline error text.
+

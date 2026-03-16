@@ -77,4 +77,21 @@ export const api = {
     });
     return handleResponse<T>(response, endpoint);
   },
+
+  async put<T>(endpoint: string, body: unknown): Promise<T> {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: "PUT",
+      headers: getHeaders(endpoint),
+      body: JSON.stringify(body),
+    });
+    return handleResponse<T>(response, endpoint);
+  },
+
+  async delete<T>(endpoint: string): Promise<T> {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: getHeaders(endpoint),
+    });
+    return handleResponse<T>(response, endpoint);
+  },
 };
