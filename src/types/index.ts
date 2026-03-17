@@ -87,5 +87,8 @@ export interface Holding {
   asset_instrument_type: string;
   quantity: number;
   average_price: number;
-  invested_price: number;
+  current_price: number;
+  invested_capital: number;
+  current_capital: number;
+  return_percentage: number;
 }

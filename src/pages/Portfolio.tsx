@@ -60,19 +60,22 @@ const Portfolio = () => {
               <Th>Type</Th>
               <Th>Quantity</Th>
               <Th>Avg. Price</Th>
-              <Th>Invested</Th>
+              <Th>Current Price</Th>
+              <Th>Invested Capital</Th>
+              <Th>Current Value</Th>
+              <Th>Return</Th>
             </Tr>
           </Thead>
           <Tbody>
             {isLoading ? (
               <Tr>
-                <Td colSpan={6}>
+                <Td colSpan={9}>
                   <EmptyState>Loading…</EmptyState>
                 </Td>
               </Tr>
             ) : holdings.length === 0 ? (
               <Tr>
-                <Td colSpan={6}>
+                <Td colSpan={9}>
                   <EmptyState>
                     No holdings found. Start by adding transactions.
                   </EmptyState>
@@ -92,7 +95,23 @@ const Portfolio = () => {
                   </Td>
                   <Td>{holding.quantity}</Td>
                   <Td>₹{fmt(holding.average_price)}</Td>
-                  <Td>₹{fmt(holding.invested_price)}</Td>
+                  <Td>₹{fmt(holding.current_price)}</Td>
+                  <Td>₹{fmt(holding.invested_capital)}</Td>
+                  <Td>₹{fmt(holding.current_capital)}</Td>
+                  <Td
+                    style={{
+                      color:
+                        holding.return_percentage > 0
+                          ? "#059669"
+                          : holding.return_percentage < 0
+                            ? "#dc2626"
+                            : "var(--text-muted)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {holding.return_percentage > 0 ? "+" : ""}
+                    {fmt(holding.return_percentage)}%
+                  </Td>
                 </Tr>
               ))
             )}
