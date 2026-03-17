@@ -52,3 +52,31 @@ export type UpdateAssetRequest = Partial<CreateAssetRequest>;
 export interface AssetResponse {
   asset: Asset;
 }
+
+export interface Transaction {
+  id: number;
+  user_asset_id: number;
+  asset_name: string;
+  asset_instrument_type: string;
+  txn_type: string;
+  quantity: number;
+  price: number;
+  txn_date: string;
+  created_at: string;
+}
+
+export interface CreateTransactionRequest {
+  asset_id: number;
+  txn_type: string;
+  quantity: number;
+  price: number;
+  txn_date: string;
+}
+
+export interface UpdateTransactionRequest {
+  id: number;
+  txn_type?: string;
+  quantity?: number;
+  price?: number;
+  txn_date?: string;
+}
