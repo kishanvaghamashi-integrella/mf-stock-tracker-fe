@@ -1,102 +1,208 @@
-import { Title, DashboardPanel } from "./Dashboard.styled";
-import { useTheme } from "../context/ThemeContext";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import ThemeToggle from "../components/ThemeToggle";
+import { api } from "../utils/api";
+import { showToast } from "../utils/toast";
+import type { Holding, Transaction } from "../types";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-const data = [
-  { name: "Jan", value: 480 },
-  { name: "Feb", value: 3000 },
-  { name: "Mar", value: 2000 },
-  { name: "Apr", value: 2780 },
-  { name: "May", value: 1890 },
-  { name: "Jun", value: 2390 },
-  { name: "Jul", value: 3490 },
-];
+  computeKPIs,
+  groupByInstrumentType,
+  buildTimeSeries,
+  buildHeatmap,
+  type Granularity,
+} from "../utils/dashboard";
+import {
+  DashboardWrapper,
+  DashboardHeader,
+  DashboardTitle,
+  SectionDivider,
+  SectionHeading,
+  Breadcrumb,
+  BreadcrumbLink,
+} from "./Dashboard.styled";
+import KPICards from "../components/dashboard/KPICards";
+import InstrumentCharts from "../components/dashboard/InstrumentCharts";
+import AssetCharts from "../components/dashboard/AssetCharts";
+import TransactionCharts from "../components/dashboard/TransactionCharts";
+import DashboardFilters from "../components/dashboard/DashboardFilters";
+import AssetTransactionPanel from "../components/dashboard/AssetTransactionPanel";
 
 const Dashboard = () => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  // ─── Data ─────────────────────────────────────────────────────────────────
+  const [holdings, setHoldings] = useState<Holding[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loadingHoldings, setLoadingHoldings] = useState(false);
 
-  const chartColors = {
-    stroke: isDark ? "#5b8cfa" : "#3b82f6",
-    grid: isDark ? "#3d3a34" : "#e2e8f0",
-    tick: isDark ? "#9c9589" : "#64748b",
-    tooltipBg: isDark ? "#28251f" : "#ffffff",
-    tooltipText: isDark ? "#f0ece4" : "#0f172a",
-  };
+  useEffect(() => {
+    const fetchAll = async () => {
+      setLoadingHoldings(true);
+      try {
+        const h = await api.get<Holding[]>("/holdings");
+        setHoldings(Array.isArray(h) ? h : []);
+      } catch (err) {
+        showToast.error(
+          err instanceof Error ? err.message : "Failed to load holdings",
+        );
+      } finally {
+        setLoadingHoldings(false);
+      }
 
+      try {
+        const t = await api.get<Transaction[]>("/transactions");
+        setTransactions(Array.isArray(t) ? t : []);
+      } catch (err) {
+        showToast.error(
+          err instanceof Error ? err.message : "Failed to load transactions",
+        );
+      }
+    };
+    fetchAll();
+  }, []);
+
+  // ─── Derived instrument types list ───────────────────────────────────────
+  const instrumentTypes = useMemo(
+    () =>
+      Array.from(new Set(holdings.map((h) => h.asset_instrument_type))).sort(),
+    [holdings],
+  );
+
+  // ─── Filter state ─────────────────────────────────────────────────────────
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [assetSearch, setAssetSearch] = useState("");
+  const [granularity, setGranularity] = useState<Granularity>("month");
+  const [volumeMode, setVolumeMode] = useState<"count" | "value">("value");
+
+  // ─── Drill-down state ────────────────────────────────────────────────────
+  const [drillType, setDrillType] = useState<string | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+
+  const handleTypeToggle = useCallback((type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
+    );
+  }, []);
+
+  const handleSliceClick = useCallback((type: string) => {
+    setDrillType((prev) => (prev === type ? null : type));
+  }, []);
+
+  const handleAssetClick = useCallback((assetName: string) => {
+    setSelectedAsset(assetName);
+  }, []);
+
+  // ─── Filtered holdings ───────────────────────────────────────────────────
+  const holdingsFiltered = useMemo(() => {
+    let h = holdings;
+    if (selectedTypes.length > 0) {
+      h = h.filter((x) => selectedTypes.includes(x.asset_instrument_type));
+    }
+    if (assetSearch.trim()) {
+      const q = assetSearch.toLowerCase();
+      h = h.filter((x) => x.asset_name.toLowerCase().includes(q));
+    }
+    return h;
+  }, [holdings, selectedTypes, assetSearch]);
+
+  const kpis = useMemo(() => computeKPIs(holdingsFiltered), [holdingsFiltered]);
+  const instrumentGroups = useMemo(
+    () => groupByInstrumentType(holdingsFiltered),
+    [holdingsFiltered],
+  );
+
+  const dateRange = useMemo<[string, string] | null>(
+    () => (dateFrom && dateTo ? [dateFrom, dateTo] : null),
+    [dateFrom, dateTo],
+  );
+
+  const timeSeries = useMemo(
+    () => buildTimeSeries(transactions, granularity, dateRange, selectedTypes),
+    [transactions, granularity, dateRange, selectedTypes],
+  );
+
+  const heatmap = useMemo(() => buildHeatmap(transactions), [transactions]);
+
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div
-      className="min-h-screen p-8"
-      style={{ backgroundColor: "var(--bg-page)" }}
-    >
-      <header className="mb-8">
-        <h1
-          className="text-3xl font-bold"
-          style={{ color: "var(--text-default)" }}
-        >
-          Investment Portfolio
-        </h1>
-        <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-          Welcome to your portfolio tracker.
-        </p>
-      </header>
+    <DashboardWrapper>
+      {/* Header */}
+      <DashboardHeader>
+        <DashboardTitle>Portfolio Dashboard</DashboardTitle>
+        <ThemeToggle />
+      </DashboardHeader>
 
-      <DashboardPanel>
-        <Title>Portfolio Performance</Title>
-        <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke={chartColors.grid}
-              />
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: chartColors.tick }}
-                dy={10}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: chartColors.tick }}
-                dx={-10}
-              />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: "0.5rem",
-                  border: `1px solid ${isDark ? "#3d3a34" : "#e2e8f0"}`,
-                  boxShadow: isDark
-                    ? "0 10px 15px -3px rgb(0 0 0 / 0.4)"
-                    : "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                  backgroundColor: chartColors.tooltipBg,
-                  color: chartColors.tooltipText,
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke={chartColors.stroke}
-                strokeWidth={3}
-                dot={{ r: 4, strokeWidth: 2 }}
-                activeDot={{ r: 6, strokeWidth: 0 }}
-                animationDuration={1500}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </DashboardPanel>
-    </div>
+      {/* Section 6 — Global filters */}
+      <DashboardFilters
+        instrumentTypes={instrumentTypes}
+        selectedTypes={selectedTypes}
+        onTypeToggle={handleTypeToggle}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onDateFromChange={setDateFrom}
+        onDateToChange={setDateTo}
+        assetSearch={assetSearch}
+        onAssetSearchChange={setAssetSearch}
+      />
+
+      {/* Section 1 — KPI Cards */}
+      <KPICards kpis={kpis} loading={loadingHoldings} />
+
+      {/* Section 2 — Instrument Type Charts */}
+      <SectionDivider>
+        <SectionHeading>Instrument Type Analysis</SectionHeading>
+      </SectionDivider>
+      <InstrumentCharts
+        groups={instrumentGroups}
+        onSliceClick={handleSliceClick}
+      />
+
+      {/* Section 3 — Asset Charts */}
+      <SectionDivider>
+        <SectionHeading>
+          Asset Performance
+          {drillType && (
+            <Breadcrumb
+              as="span"
+              style={{ display: "inline-flex", marginLeft: "1rem" }}
+            >
+              <BreadcrumbLink onClick={() => setDrillType(null)}>
+                All
+              </BreadcrumbLink>
+              <span style={{ color: "var(--text-muted)" }}>›</span>
+              <span style={{ color: "var(--text-default)" }}>{drillType}</span>
+            </Breadcrumb>
+          )}
+        </SectionHeading>
+      </SectionDivider>
+      <AssetCharts
+        holdings={holdingsFiltered}
+        instrumentFilter={drillType}
+        onAssetClick={handleAssetClick}
+      />
+
+      {/* Section 4 — Transaction Charts */}
+      <SectionDivider>
+        <SectionHeading>Transaction Activity</SectionHeading>
+      </SectionDivider>
+      <TransactionCharts
+        timeSeries={timeSeries}
+        heatmap={heatmap}
+        granularity={granularity}
+        onGranularityChange={setGranularity}
+        volumeMode={volumeMode}
+        onVolumeModeChange={setVolumeMode}
+        instrumentTypes={instrumentTypes}
+      />
+
+      {/* Section 5 — Asset transaction side panel */}
+      {selectedAsset && (
+        <AssetTransactionPanel
+          assetName={selectedAsset}
+          transactions={transactions}
+          onClose={() => setSelectedAsset(null)}
+        />
+      )}
+    </DashboardWrapper>
   );
 };
 
