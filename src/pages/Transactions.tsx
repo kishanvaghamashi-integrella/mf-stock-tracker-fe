@@ -103,8 +103,10 @@ const Transactions = () => {
     try {
       const res = await api.get<Asset[]>(`/assets/?limit=200&offset=0`);
       setAssets(res ?? []);
-    } catch {
-      // silent — dropdown will just be empty
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to load assets";
+      showToast.error(message);
     }
   }, []);
 
@@ -399,6 +401,7 @@ const Transactions = () => {
                         $variant="edit"
                         onClick={() => openEdit(txn)}
                         title="Edit transaction"
+                        aria-label="Edit transaction"
                       >
                         <Pencil size={15} />
                       </ActionButton>
@@ -406,6 +409,7 @@ const Transactions = () => {
                         $variant="delete"
                         onClick={() => openDelete(txn)}
                         title="Delete transaction"
+                        aria-label="Delete transaction"
                       >
                         <Trash2 size={15} />
                       </ActionButton>
@@ -475,7 +479,8 @@ const Transactions = () => {
                 {!editingTxn && (
                   <FormGroupFull>
                     <FormLabel htmlFor="asset_id">
-                      Asset <span style={{ color: "#ef4444" }}>*</span>
+                      Asset{" "}
+                      <span style={{ color: "var(--color-danger)" }}>*</span>
                     </FormLabel>
                     <FormSelect
                       id="asset_id"
