@@ -80,3 +80,12 @@ export interface UpdateTransactionRequest {
   price?: number;
   txn_date?: string;
 }
+
+export interface Holding {
+  id: number;
+  asset_name: string;
+  asset_instrument_type: string;
+  quantity: number;
+  average_price: number;
+  invested_price: number;
+}
