@@ -32,7 +32,7 @@ const Portfolio = () => {
       setIsLoading(true);
       try {
         const data = await api.get<Holding[]>("/holdings");
-        setHoldings(data);
+        setHoldings(Array.isArray(data) ? data : []);
       } catch (err: unknown) {
         showToast.error(
           err instanceof Error ? err.message : "Failed to load holdings",
@@ -65,27 +65,19 @@ const Portfolio = () => {
           </Thead>
           <Tbody>
             {isLoading ? (
-              <tr>
-                <td
-                  colSpan={6}
-                  style={{
-                    textAlign: "center",
-                    padding: "3rem 1rem",
-                    color: "var(--text-muted)",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Loading…
-                </td>
-              </tr>
+              <Tr>
+                <Td colSpan={6}>
+                  <EmptyState>Loading…</EmptyState>
+                </Td>
+              </Tr>
             ) : holdings.length === 0 ? (
-              <tr>
-                <td colSpan={6}>
+              <Tr>
+                <Td colSpan={6}>
                   <EmptyState>
                     No holdings found. Start by adding transactions.
                   </EmptyState>
-                </td>
-              </tr>
+                </Td>
+              </Tr>
             ) : (
               holdings.map((holding, idx) => (
                 <Tr key={holding.id}>
@@ -95,7 +87,7 @@ const Portfolio = () => {
                     <BadgeType
                       $type={holding.asset_instrument_type.toUpperCase()}
                     >
-                      {holding.asset_instrument_type.replace("_", " ")}
+                      {holding.asset_instrument_type.replace(/_/g, " ")}
                     </BadgeType>
                   </Td>
                   <Td>{holding.quantity}</Td>
